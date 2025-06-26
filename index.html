@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brainf*ck Language Compiler</title>
-    <!-- Tailwind CSS -->
+    <title>Esoteric Programming Languages</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -12,293 +12,69 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom styles for rounded corners on specific elements not fully covered by Tailwind */
-        textarea, button, .bg-white, .bg-gray-800, .bg-gray-100, .bg-blue-50 {
-            border-radius: 0.5rem; /* Equivalent to rounded-lg */
+        /* Custom styles for consistent rounded corners and shadow */
+        .container-box {
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+        }
+        .content-section {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            margin-bottom: 1rem; /* mb-4 */
         }
     </style>
 </head>
 <body class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
 
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Brainf*ck Language Compiler</h1>
-
-        <div class="mb-6">
-            <label for="minicell-code" class="block text-gray-700 text-sm font-semibold mb-2">
-                Write your Brainf*ck code here:
-            </label>
-            <textarea
-                id="minicell-code"
-                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[150px]"
-                placeholder="Enter your Brainf*ck code..."
-            >++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.</textarea>
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-gray-800">Esoteric Langauge Interpreters</a>
+            <nav id="main-nav" class="d-none d-lg-block">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-700 hover:text-gray-800 transition duration-300">Home</a></li>
+                    <li><a href="Brainfuck.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">BrainF*ck</a></li>
+                    <li><a href="Junlang.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">JunLang</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <div class="mb-6">
-            <label for="minicell-input" class="block text-gray-700 text-sm font-semibold mb-2">
-                Input for Brainf*ck (characters will be read one by one):
-            </label>
-            <textarea
-                id="minicell-input"
-                class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[80px]"
-                placeholder="Enter input characters here..."
-            ></textarea>
-        </div>
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="container-box bg-white p-8 w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Exploring Esoteric Programming Languages</h1>
 
-        <div class="flex justify-center mb-6">
-            <button
-                id="run-button"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-            >
-                Run Brainf*ck Code
-            </button>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-3">Output:</h2>
-            <div
-                id="output-area"
-                class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto h-32 whitespace-pre-wrap"
-            >
-                No output yet.
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-3">Status:</h2>
-            <p id="status-area" class="text-gray-700">Ready</p>
-        </div>
-
-        <div class="mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 mb-3">Memory Tape (First 10 cells):</h2>
-            <div class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">
-                <table class="min-w-full bg-white rounded-md shadow-sm">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Index</th>
-                            <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Value</th>
-                            <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Char</th>
-                        </tr>
-                    </thead>
-                    <tbody id="memory-tape-body">
-                        <!-- Memory tape rows will be inserted here by JavaScript -->
-                    </tbody>
-                </table>
-                <p id="data-pointer-info" class="text-xs text-gray-500 mt-2">Current Data Pointer: 0</p>
-            </div>
-        </div>
-
-        <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h2 class="text-xl font-semibold text-blue-800 mb-3">About Brainf*ck:</h2>
+        <div class="content-section">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">What are Esoteric Programming Languages (Esolangs)?</h2>
             <p class="text-gray-700 mb-2">
-                Brainf*ck is an esoteric programming language. It operates on a tape of memory cells, each storing a single byte (0-255), and a data pointer that points to the current cell.
+                Esoteric programming languages, often shortened to "esolangs," are programming languages designed to experiment with unusual ideas, to be a joke, or to serve as a challenge for programmers. They are usually not meant for practical software development but are fascinating for exploring the boundaries of programming and computation. They often have very small sets of commands or highly abstract concepts.
             </p>
-            <h3 class="text-lg font-medium text-blue-700 mb-2">Brainf*ck Commands:</h3>
-            <ul class="list-disc list-inside text-gray-700 space-y-1">
-                <li><code class="bg-gray-200 px-1 rounded">+</code>: Increment the byte at the data pointer (wraps 255 to 0).</li>
-                <li><code class="bg-gray-200 px-1 rounded">-</code>: Decrement the byte at the data pointer (wraps 0 to 255).</li>
-                <li><code class="bg-gray-200 px-1 rounded">></code>: Move the data pointer to the right.</li>
-                <li><code class="bg-gray-200 px-1 rounded"><</code>: Move the data pointer to the left.</li>
-                <li><code class="bg-gray-200 px-1 rounded">[</code>: If the byte at the data pointer is zero, jump the instruction pointer forward to the command after the matching <code class="bg-gray-200 px-1 rounded">]</code>.</li>
-                <li><code class="bg-gray-200 px-1 rounded">]</code>: If the byte at the data pointer is non-zero, jump the instruction pointer backward to the command after the matching <code class="bg-gray-200 px-1 rounded">[</code>.</li>
-                <li><code class="bg-gray-200 px-1 rounded">.</code>: Output the byte at the data pointer as an ASCII character.</li>
-                <li><code class="bg-gray-200 px-1 rounded">,</code>: Read one character from the input and store its ASCII value in the byte at the data pointer. If no more input, stores 0.</li>
-            </ul>
-            <p class="text-gray-700 mt-3">
-                Any characters in the code that are not one of the 8 commands are ignored and treated as comments.
+            <p class="text-gray-700">
+                Think of them as puzzles or artistic expressions in code! They can be a fun way to learn about how computers work at a very fundamental level.
             </p>
         </div>
-        <div id="user-id-display" class="mt-4 text-center text-gray-600 text-sm">
-            <!-- User ID will be displayed here by JavaScript -->
+
+        <div class="content-section">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">Brainf*ck</h2>
+            <p class="text-gray-700 mb-2">
+                Brainf*ck is one of the most famous esolangs, created by Urban Müller in 1993. It's known for its extreme minimalism, using only eight simple commands. Despite its small command set, Brainf*ck is "Turing-complete," meaning it can perform any computation that any other computer can.
+            </p>
+            <p class="text-gray-700 mb-2">
+                Brainfuck's extreme simplicity often leads to programs that are incredibly difficult to read and write for humans. A "Hello World!" program in Brainfuck, for example, is a long string of seemingly random characters. This characteristic is precisely why it's considered "esoteric" – it challenges traditional notions of what a programming language should be, pushing the boundaries of what's possible with a minimal set of instructions rather than focusing on readability or ease of use.
+            </p>
+
+        </div>
+
+        <div class="content-section">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">JunLang</h2>
+            <p class="text-gray-700 mb-2">
+                JunLang is a custom esoteric language inspired by ArnoldC, where commands are affectionate nicknames of Arjun. It moves beyond just a memory tape to include variables, basic arithmetic, conditional logic (If/Else), and loops (While).
+            </p>
+            <p class="text-gray-700">
+                This language combines the fun of custom commands with more traditional programming constructs, offering a unique blend of challenge and humor in its design. It shows how even familiar programming concepts can be expressed in unusual and creative ways.
+            </p>
         </div>
     </div>
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
-
-        let db;
-        let auth;
-        let userId = 'Loading...';
-
-        // Initialize Firebase and authenticate
-        async function initFirebase() {
-            try {
-                if (Object.keys(firebaseConfig).length > 0) {
-                    const app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    userId = auth.currentUser?.uid || crypto.randomUUID();
-                    console.log("Firebase initialized and authenticated. User ID:", userId);
-                } else {
-                    console.warn("Firebase config not found. Running without Firebase features.");
-                    userId = crypto.randomUUID(); // Generate a random ID if Firebase isn't configured
-                }
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                userId = `Error: ${error.message.substring(0, 50)}...`; // Truncate error message
-                document.getElementById('status-area').textContent = `Error: Firebase initialization failed.`;
-            } finally {
-                document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
-            }
-        }
-
-        // Call Firebase initialization when the script loads
-        initFirebase();
-
-        // Brainf*ck interpreter logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const codeInput = document.getElementById('minicell-code');
-            const inputInput = document.getElementById('minicell-input');
-            const runButton = document.getElementById('run-button');
-            const outputArea = document.getElementById('output-area');
-            const statusArea = document.getElementById('status-area');
-            const memoryTapeBody = document.getElementById('memory-tape-body');
-            const dataPointerInfo = document.getElementById('data-pointer-info');
-
-            let memoryTape = new Uint8Array(30000).fill(0); // Each cell stores 0-255
-            let dataPointer = 0; // Data pointer
-
-            function updateMemoryDisplay() {
-                memoryTapeBody.innerHTML = ''; // Clear existing rows
-                for (let i = 0; i < 10; i++) {
-                    const row = document.createElement('tr');
-                    row.className = `border-b ${i === dataPointer ? 'bg-yellow-100 font-bold' : 'hover:bg-gray-50'}`;
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-gray-700">${i} ${i === dataPointer ? '(Ptr)' : ''}</td>
-                        <td class="py-2 px-4 text-gray-700">${memoryTape[i]}</td>
-                        <td class="py-2 px-4 text-gray-700">${String.fromCharCode(memoryTape[i])}</td>
-                    `;
-                    memoryTapeBody.appendChild(row);
-                }
-                dataPointerInfo.textContent = `Current Data Pointer: ${dataPointer}`;
-            }
-
-            // Initial memory display update
-            updateMemoryDisplay();
-
-            runButton.addEventListener('click', () => {
-                const code = codeInput.value;
-                const inputString = inputInput.value;
-
-                outputArea.textContent = ''; // Clear previous output
-                statusArea.textContent = 'Running...';
-                memoryTape.fill(0); // Reset tape
-                dataPointer = 0; // Reset pointer
-                let currentOutput = '';
-                let programCounter = 0;
-                let inputPointer = 0; // Pointer for reading from the inputString
-
-                // Pre-process the code to find matching brackets for efficient jumps
-                const bracketMap = new Map();
-                const leftBracketsStack = [];
-
-                try {
-                    for (let i = 0; i < code.length; i++) {
-                        const char = code[i];
-                        if (char === '[') {
-                            leftBracketsStack.push(i);
-                        } else if (char === ']') {
-                            if (leftBracketsStack.length === 0) {
-                                throw new Error(`Syntax Error: Unmatched ']' at position ${i}`);
-                            }
-                            const openBracketPos = leftBracketsStack.pop();
-                            bracketMap.set(openBracketPos, i);
-                            bracketMap.set(i, openBracketPos);
-                        }
-                    }
-
-                    if (leftBracketsStack.length > 0) {
-                        throw new Error(`Syntax Error: Unmatched '[' at position ${leftBracketsStack[0]}`);
-                    }
-
-                    // Main execution loop
-                    const maxIterations = 10000000; // Safeguard against infinite loops
-                    let iterations = 0;
-
-                    while (programCounter < code.length && iterations < maxIterations) {
-                        const command = code[programCounter];
-
-                        switch (command) {
-                            case '+':
-                                memoryTape[dataPointer] = (memoryTape[dataPointer] + 1) % 256;
-                                break;
-                            case '-':
-                                memoryTape[dataPointer] = (memoryTape[dataPointer] - 1 + 256) % 256;
-                                break;
-                            case '>':
-                                dataPointer++;
-                                if (dataPointer >= memoryTape.length) {
-                                    throw new Error(`Runtime Error: Data pointer out of bounds (right) at position ${programCounter}`);
-                                }
-                                break;
-                            case '<':
-                                dataPointer--;
-                                if (dataPointer < 0) {
-                                    throw new Error(`Runtime Error: Data pointer out of bounds (left) at position ${programCounter}`);
-                                }
-                                break;
-                            case '[':
-                                if (memoryTape[dataPointer] === 0) {
-                                    programCounter = bracketMap.get(programCounter);
-                                }
-                                break;
-                            case ']':
-                                if (memoryTape[dataPointer] !== 0) {
-                                    programCounter = bracketMap.get(programCounter);
-                                }
-                                break;
-                            case '.':
-                                currentOutput += String.fromCharCode(memoryTape[dataPointer]);
-                                break;
-                            case ',': // Read input
-                                if (inputPointer < inputString.length) {
-                                    memoryTape[dataPointer] = inputString.charCodeAt(inputPointer);
-                                    inputPointer++;
-                                } else {
-                                    // End of input, set cell to 0
-                                    memoryTape[dataPointer] = 0;
-                                }
-                                break;
-                            default:
-                                // Ignore non-command characters (comments)
-                                break;
-                        }
-                        programCounter++;
-                        iterations++;
-                    }
-
-                    if (iterations >= maxIterations) {
-                        statusArea.textContent = 'Execution halted: Possible infinite loop detected (exceeded max iterations).';
-                    } else {
-                        statusArea.textContent = 'Execution complete.';
-                    }
-                    outputArea.textContent = currentOutput;
-
-                } catch (error) {
-                    statusArea.textContent = `Error: ${error.message}`;
-                    outputArea.textContent = currentOutput + '\n' + `Error: ${error.message}`;
-                } finally {
-                    // Always update display after execution (or error)
-                    updateMemoryDisplay();
-                    outputArea.scrollTop = outputArea.scrollHeight; // Scroll output to bottom
-                }
-            });
-        });
-    </script>
 </body>
 </html>
