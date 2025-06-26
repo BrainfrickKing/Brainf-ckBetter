@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JunLang Compiler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Minor style adjustments for better scrolling experience */
+        .output-console {
+            scrollbar-width: thin;
+            scrollbar-color: #4a5568 #2d3748;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center p-4">
+
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-gray-800">Esoteric Langauge Interpreters</a>
+            <nav id="main-nav" class="d-none d-lg-block">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
+                    <li><a href="Brainfuck.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">BrainF*ck</a></li>
+                    <li><a href="Junlang.html" class="text-lg text-gray-700 hover:text-gray-800 transition duration-300">JunLang</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">JunLang Compiler</h1>
+
+            <div class="mb-6">
+                <label for="junny-code" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Write your JunLang code here:
+                </label>
+                <textarea
+                    id="junny-code"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[250px]"
+                    placeholder="Enter your JunLang code..."
+                ></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label for="junny-input" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Input for JunLang (each line will be read as an integer):
+                </label>
+                <textarea
+                    id="junny-input"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[80px]"
+                    placeholder="Enter input numbers here, each on a new line..."
+                ></textarea>
+            </div>
+
+            <div class="flex justify-center mb-6">
+                <button
+                    id="run-button"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                    Run JunLang Code
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Output:</h2>
+                <div
+                    id="output-console"
+                    class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto h-48 whitespace-pre-wrap output-console"
+                >No output yet.</div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Status:</h2>
+                <p id="status-text" class="text-gray-700">Ready</p>
+            </div>
+
+            <div class="mb-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Variables:</h2>
+                <div class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">
+                    <table class="min-w-full bg-white rounded-md shadow-sm">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variables-body">
+                            <tr>
+                                <td colspan="2" class="py-2 px-4 text-center text-gray-500">No variables declared yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-3">About JunLang:</h2>
+                <p class="text-gray-700 mb-2">
+                    JunLang is an esoteric programming language inspired by ArnoldC, where each command is an affectionate nickname of Arjun. It supports basic integer arithmetic, variable assignment, conditional logic (If/Else), and loops (While).
+                </p>
+                <h3 class="text-lg font-medium text-blue-700 mb-2">JunLang Commands:</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                    <li><code class="bg-gray-200 px-1 rounded">Junny-jun-jun</code>: Program Start</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Junny-jun-jun-junny jun</code>: Program End (Note: The provided code had a typo, corrected to `junny-jun` for symmetry)</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Junny <variable_name></code>: Declare a new integer variable.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Mr. Junny <variable_name> IS <value_or_variable></code>: Assign a value.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Argoonington <variable> ADD <value_or_variable></code>: Add.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Argooning <variable> SUBTRACT <value_or_variable></code>: Subtract.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Argoonies <variable> MULTIPLY <value_or_variable></code>: Multiply.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">argooner <variable> DIVIDE <value_or_variable></code>: Divide.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Daddy a jun <text_or_variable></code>: Print.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Arjuna <variable_name></code>: Read integer from input.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Junyper <var1> EQUALS <var2_or_literal></code>: If statement.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Juniper</code>: Else branch.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Arjudge</code>: End If block.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Arjulio <var1> EQUALS <var2_or_literal></code>: While loop.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Arjunny</code>: End While loop.</li>
+                    <li><code class="bg-gray-200 px-1 rounded">// <comment_text></code>: Comment.</li>
+                </ul>
+            </div>
+            
+            <div id="user-id-container" class="mt-4 text-center text-gray-600 text-sm" style="display: none;">
+                User ID: <span id="user-id-span"></span>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Define Global Variables and Constants ---
+    
+    // Define JunLang command patterns
+    const COMMANDS = {
+        PROGRAM_START: 'Junny-jun-jun',
+        PROGRAM_END: 'Junny-jun-jun-junny-jun',
+        DECLARE_VAR_PREFIX: 'Junny ', // Junny <variable_name>
+        ASSIGN_VAR_PATTERN: /Mr\. Junny ([a-zA-Z_][a-zA-Z0-9_]*) IS (.+)/, // Mr. Junny <variable_name> IS <value>
+        ADD_PATTERN: /Argoonington ([a-zA-Z_][a-zA-Z0-9_]*) ADD (.+)/, // Argoonington <variable> ADD <value>
+        SUBTRACT_PATTERN: /Argooning ([a-zA-Z_][a-zA-Z0-9_]*) SUBTRACT (.+)/, // Argooning <variable> SUBTRACT <value>
+        MULTIPLY_PATTERN: /Argoonies ([a-zA-Z_][a-zA-Z0-9_]*) MULTIPLY (.+)/, // Argoonies <variable> MULTIPLY <value>
+        DIVIDE_PATTERN: /argooner ([a-zA-Z_][a-zA-Z0-9_]*) DIVIDE (.+)/, // argooner <variable> DIVIDE <value>
+        PRINT_PATTERN: /Daddy a jun (.+)/, // Daddy a jun <text_or_variable>
+        READ_INT_PATTERN: /Arjuna ([a-zA-Z_][a-zA-Z0-9_]*)/, // Arjuna <variable_name>
+        IF_START_PATTERN: /Junyper ([a-zA-Z_][a-zA-Z0-9_]*) EQUALS (.+)/, // Junyper <var1> EQUALS <var2_or_literal>
+        ELSE: 'Juniper',
+        END_IF: 'Arjudge',
+        WHILE_START_PATTERN: /Arjulio ([a-zA-Z_][a-zA-Z0-9_]*) EQUALS (.+)/, // Arjulio <var1> EQUALS <var2_or_literal>
+        END_WHILE: 'Arjunny',
+    };
+
+    // Default code to display in the editor
+    const DEFAULT_CODE = `Junny-jun-jun
+Junny counter
+Mr. Junny counter IS 0
+Junny limit
+Mr. Junny limit IS 5
+
+Daddy a jun "Counting from 0 to 4:"
+
+// The original 'EQUALS' check for the while loop was incorrect.
+// JunLang while loops should check for 'NOT EQUALS' to execute.
+// This example is modified to demonstrate a working loop.
+// Let's create a temporary flag.
+Junny loop_flag
+Mr. Junny loop_flag IS 0
+Junny loop_end_flag
+Mr. Junny loop_end_flag IS 1
+
+Arjulio loop_flag EQUALS loop_end_flag
+    Daddy a jun counter
+    Argoonington counter ADD 1
+    
+    // Check if we should exit the loop
+    Junyper counter EQUALS limit
+        Mr. Junny loop_flag IS 1
+    Arjudge
+Arjunny
+
+Junny num1
+Junny num2
+Daddy a jun "Enter a number for num1:"
+Arjuna num1
+Daddy a jun "Enter a number for num2:"
+Arjuna num2
+
+Junny result
+Mr. Junny result IS num1
+Argoonington result ADD num2
+Daddy a jun "Sum is: "
+Daddy a jun result
+
+Junyper num1 EQUALS num2
+    Daddy a jun "num1 equals num2!"
+Juniper
+    Daddy a jun "num1 does not equal num2."
+Arjudge
+
+Junny-jun-jun-junny-jun`;
+
+    // --- State Variables (replaces React's useState) ---
+    let db = null;
+    let auth = null;
+    let userId = null;
+    let currentVariables = new Map();
+
+    // --- DOM Element References ---
+    const codeTextarea = document.getElementById('junny-code');
+    const inputTextarea = document.getElementById('junny-input');
+    const runButton = document.getElementById('run-button');
+    const outputConsole = document.getElementById('output-console');
+    const statusText = document.getElementById('status-text');
+    const variablesBody = document.getElementById('variables-body');
+    const userIdContainer = document.getElementById('user-id-container');
+    const userIdSpan = document.getElementById('user-id-span');
+
+    // --- Core Functions ---
+
+    /**
+     * Updates the UI with the current state of variables.
+     * Replaces React's automatic re-rendering.
+     */
+    function updateDOM(output, status, vars) {
+        // Update output console and scroll to bottom
+        outputConsole.textContent = output || "No output yet.";
+        outputConsole.scrollTop = outputConsole.scrollHeight;
+
+        // Update status text
+        statusText.textContent = status;
+
+        // Update variables table
+        variablesBody.innerHTML = ''; // Clear previous entries
+        if (vars.size === 0) {
+            variablesBody.innerHTML = '<tr><td colspan="2" class="py-2 px-4 text-center text-gray-500">No variables declared yet.</td></tr>';
+        } else {
+            vars.forEach((value, name) => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const nameCell = document.createElement('td');
+                nameCell.className = 'py-2 px-4 border-b text-gray-700';
+                nameCell.textContent = name;
+                
+                const valueCell = document.createElement('td');
+                valueCell.className = 'py-2 px-4 border-b text-gray-700';
+                valueCell.textContent = typeof value === 'string' ? `"${value}"` : value;
+                
+                row.appendChild(nameCell);
+                row.appendChild(valueCell);
+                variablesBody.appendChild(row);
+            });
+        }
+
+        // Update User ID display
+        if (userId) {
+            userIdSpan.textContent = userId;
+            userIdContainer.style.display = 'block';
+        } else {
+            userIdContainer.style.display = 'none';
+        }
+    }
+
+    /**
+     * Initializes Firebase.
+     */
+    async function initFirebase() {
+        try {
+            // These global variables might be injected in a specific environment like Canvas
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+            
+            const firebaseConfig = JSON.parse(firebaseConfigStr);
+
+            if (Object.keys(firebaseConfig).length > 0) {
+                const app = firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore(app);
+                auth = firebase.auth(app);
+
+                if (initialAuthToken) {
+                    await auth.signInWithCustomToken(initialAuthToken);
+                } else {
+                    await auth.signInAnonymously();
+                }
+
+                const currentUser = auth.currentUser;
+                userId = currentUser?.uid || crypto.randomUUID();
+                console.log("Firebase initialized and authenticated.");
+            } else {
+                console.warn("Firebase config not found. Running without Firebase features.");
+                userId = crypto.randomUUID();
+            }
+        } catch (error) {
+            console.error("Error initializing Firebase:", error);
+            userId = 'Error';
+            updateDOM('', 'Error: Firebase initialization failed. ' + error.message, new Map());
+        }
+        updateDOM('', statusText.textContent, currentVariables); // Update UI with User ID
+    }
+    
+    /**
+     * Helper to get variable value or literal integer/string.
+     */
+    function resolveValue(token, vars) {
+        token = token.trim();
+        if (token.startsWith('"') && token.endsWith('"')) {
+            return token.substring(1, token.length - 1);
+        }
+        if (!isNaN(Number(token))) {
+            return Number(token);
+        }
+        if (vars.has(token)) {
+            return vars.get(token);
+        }
+        throw new Error(`Undefined variable or malformed literal: "${token}"`);
+    };
+
+    /**
+     * Executes the JunLang code.
+     */
+    function executeJunnyLang() {
+        let currentOutput = '';
+        let currentStatus = 'Running...';
+        currentVariables = new Map();
+        updateDOM(currentOutput, currentStatus, currentVariables);
+
+        let vars = new Map();
+        let programCounter = 0;
+        const code = codeTextarea.value;
+        const inputString = inputTextarea.value;
+        const lines = code.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith('//'));
+        let inputLines = inputString.split('\n').map(line => line.trim());
+        let inputPointer = 0;
+
+        try {
+            // Verify program start and end
+            if (lines.length === 0 || lines[0] !== COMMANDS.PROGRAM_START) {
+                throw new Error(`Syntax Error: Program must start with "${COMMANDS.PROGRAM_START}"`);
+            }
+            if (lines[lines.length - 1] !== COMMANDS.PROGRAM_END) {
+                throw new Error(`Syntax Error: Program must end with "${COMMANDS.PROGRAM_END}"`);
+            }
+
+            // Main execution loop
+            const maxExecutionSteps = 100000;
+            let executionSteps = 0;
+
+            while (programCounter < lines.length && executionSteps < maxExecutionSteps) {
+                const line = lines[programCounter];
+                let matched = false;
+
+                // DECLARE VARIABLE
+                if (line.startsWith(COMMANDS.DECLARE_VAR_PREFIX)) {
+                    const varName = line.substring(COMMANDS.DECLARE_VAR_PREFIX.length).trim();
+                    if (!varName.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) {
+                        throw new Error(`Syntax Error: Invalid variable name "${varName}" at line ${programCounter + 1}`);
+                    }
+                    if (vars.has(varName)) {
+                        throw new Error(`Runtime Error: Variable "${varName}" already declared at line ${programCounter + 1}`);
+                    }
+                    vars.set(varName, 0);
+                    matched = true;
+                }
+                // ASSIGN VARIABLE
+                else if (COMMANDS.ASSIGN_VAR_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.ASSIGN_VAR_PATTERN);
+                    const varName = match[1];
+                    const valueToken = match[2];
+                    if (!vars.has(varName)) {
+                        throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    }
+                    const value = resolveValue(valueToken, vars);
+                    vars.set(varName, value);
+                    matched = true;
+                }
+                // ARITHMETIC OPERATIONS
+                else if (COMMANDS.ADD_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.ADD_PATTERN);
+                    const varName = match[1];
+                    const valueToken = match[2];
+                    if (!vars.has(varName)) throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    const value = resolveValue(valueToken, vars);
+                    if (typeof vars.get(varName) !== 'number' || typeof value !== 'number') throw new Error(`Type Error at line ${programCounter + 1}`);
+                    vars.set(varName, vars.get(varName) + value);
+                    matched = true;
+                }
+                else if (COMMANDS.SUBTRACT_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.SUBTRACT_PATTERN);
+                    const varName = match[1];
+                    const valueToken = match[2];
+                    if (!vars.has(varName)) throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    const value = resolveValue(valueToken, vars);
+                    if (typeof vars.get(varName) !== 'number' || typeof value !== 'number') throw new Error(`Type Error at line ${programCounter + 1}`);
+                    vars.set(varName, vars.get(varName) - value);
+                    matched = true;
+                }
+                else if (COMMANDS.MULTIPLY_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.MULTIPLY_PATTERN);
+                    const varName = match[1];
+                    const valueToken = match[2];
+                    if (!vars.has(varName)) throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    const value = resolveValue(valueToken, vars);
+                    if (typeof vars.get(varName) !== 'number' || typeof value !== 'number') throw new Error(`Type Error at line ${programCounter + 1}`);
+                    vars.set(varName, vars.get(varName) * value);
+                    matched = true;
+                }
+                else if (COMMANDS.DIVIDE_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.DIVIDE_PATTERN);
+                    const varName = match[1];
+                    const valueToken = match[2];
+                    if (!vars.has(varName)) throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    const value = resolveValue(valueToken, vars);
+                    if (typeof vars.get(varName) !== 'number' || typeof value !== 'number') throw new Error(`Type Error at line ${programCounter + 1}`);
+                    if (value === 0) throw new Error(`Runtime Error: Division by zero at line ${programCounter + 1}`);
+                    vars.set(varName, Math.floor(vars.get(varName) / value));
+                    matched = true;
+                }
+                // PRINT
+                else if (COMMANDS.PRINT_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.PRINT_PATTERN);
+                    const contentToken = match[1];
+                    const value = resolveValue(contentToken, vars);
+                    currentOutput += value.toString() + '\n';
+                    matched = true;
+                }
+                // READ INTEGER
+                else if (COMMANDS.READ_INT_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.READ_INT_PATTERN);
+                    const varName = match[1];
+                    if (!vars.has(varName)) throw new Error(`Runtime Error: Undefined variable "${varName}" at line ${programCounter + 1}`);
+                    if (inputPointer < inputLines.length) {
+                        const inputValue = parseInt(inputLines[inputPointer], 10);
+                        if (isNaN(inputValue)) throw new Error(`Input Error: Expected integer, got "${inputLines[inputPointer]}" at line ${programCounter + 1}`);
+                        vars.set(varName, inputValue);
+                        inputPointer++;
+                    } else {
+                        throw new Error(`Input Error: No more input available for variable "${varName}" at line ${programCounter + 1}`);
+                    }
+                    matched = true;
+                }
+                // IF START
+                else if (COMMANDS.IF_START_PATTERN.test(line)) {
+                    const match = line.match(COMMANDS.IF_START_PATTERN);
+                    const val1 = resolveValue(match[1], vars);
+                    const val2 = resolveValue(match[2], vars);
+
+                    if (val1 !== val2) {
+                        let balance = 1;
+                        let j = programCounter + 1;
+                        while (j < lines.length) {
+                            if (COMMANDS.IF_START_PATTERN.test(lines[j]) || COMMANDS.WHILE_START_PATTERN.test(lines[j])) balance++;
+                            else if (lines[j] === COMMANDS.END_IF || lines[j] === COMMANDS.END_WHILE) balance--;
+                            if (balance === 1 && lines[j] === COMMANDS.ELSE) {
+                                programCounter = j;
+                                break;
+                            } else if (balance === 0 && lines[j] === COMMANDS.END_IF) {
+                                programCounter = j;
+                                break;
+                            }
+                            j++;
+                        }
+                        if (j === lines.length) throw new Error(`Syntax Error: Unclosed 'Junyper' (If) at line ${programCounter + 1}`);
+                    }
+                    matched = true;
+                }
+                // ELSE
+                else if (line === COMMANDS.ELSE) {
+                    let balance = 1;
+                    let j = programCounter + 1;
+                    while (j < lines.length) {
+                        if (COMMANDS.IF_START_PATTERN.test(lines[j]) || COMMANDS.WHILE_START_PATTERN.test(lines[j])) balance++;
+                        else if (lines[j] === COMMANDS.END_IF || lines[j] === COMMANDS.END_WHILE) balance--;
+                        if (balance === 0 && lines[j] === COMMANDS.END_IF) {
+                            programCounter = j;
+                            break;
+                        }
+                        j++;
+                    }
+                    if (j === lines.length) throw new Error(`Syntax Error: Unclosed 'Juniper' (Else) at line ${programCounter + 1}`);
+                    matched = true;
+                }
+                // WHILE START
+                else if (COMMANDS.WHILE_START_PATTERN.test(line)) {
+                    // NOTE: This implementation makes the loop continue while they are *NOT* equal.
+                    const match = line.match(COMMANDS.WHILE_START_PATTERN);
+                    const val1 = resolveValue(match[1], vars);
+                    const val2 = resolveValue(match[2], vars);
+
+                    if (val1 === val2) { // If condition is met, jump past loop
+                        let balance = 1;
+                        let j = programCounter + 1;
+                        while (j < lines.length) {
+                            if (COMMANDS.IF_START_PATTERN.test(lines[j]) || COMMANDS.WHILE_START_PATTERN.test(lines[j])) balance++;
+                            else if (lines[j] === COMMANDS.END_IF || lines[j] === COMMANDS.END_WHILE) balance--;
+                            if (balance === 0 && lines[j] === COMMANDS.END_WHILE) {
+                                programCounter = j;
+                                break;
+                            }
+                            j++;
+                        }
+                        if (j === lines.length) throw new Error(`Syntax Error: Unclosed 'Arjulio' (While) at line ${programCounter + 1}`);
+                    }
+                    matched = true;
+                }
+                // END WHILE
+                else if (line === COMMANDS.END_WHILE) {
+                    let balance = 1;
+                    let j = programCounter - 1;
+                    while (j >= 0) {
+                        if (lines[j] === COMMANDS.END_IF || lines[j] === COMMANDS.END_WHILE) balance++;
+                        else if (COMMANDS.IF_START_PATTERN.test(lines[j]) || COMMANDS.WHILE_START_PATTERN.test(lines[j])) balance--;
+                        if (balance === 0 && COMMANDS.WHILE_START_PATTERN.test(lines[j])) {
+                            programCounter = j - 1; // Loop back to line before while start
+                            break;
+                        }
+                        j--;
+                    }
+                    if (j < 0) throw new Error(`Syntax Error: 'Arjunny' (End While) without matching 'Arjulio' at line ${programCounter + 1}`);
+                    matched = true;
+                }
+                // Ignored tokens
+                else if (line === COMMANDS.PROGRAM_START || line === COMMANDS.PROGRAM_END || line === COMMANDS.END_IF) {
+                    matched = true;
+                }
+
+                if (!matched) {
+                    throw new Error(`Syntax Error: Unrecognized command at line ${programCounter + 1}: "${line}"`);
+                }
+
+                programCounter++;
+                executionSteps++;
+            }
+
+            if (executionSteps >= maxExecutionSteps) {
+                currentStatus = 'Execution halted: Possible infinite loop detected.';
+            } else {
+                currentStatus = 'Execution complete.';
+            }
+            currentVariables = new Map(vars);
+
+        } catch (error) {
+            currentStatus = `Error: ${error.message}`;
+            currentOutput += `\nExecution Error: ${error.message}`;
+            currentVariables = new Map(vars);
+        }
+
+        // Final UI update after execution
+        updateDOM(currentOutput, currentStatus, currentVariables);
+    };
+
+
+    // --- Initialization and Event Listeners ---
+
+    // Set initial code in textarea
+    codeTextarea.value = DEFAULT_CODE;
+
+    // Initialize Firebase services
+    initFirebase();
+    
+    // Attach event listener to the run button
+    runButton.addEventListener('click', executeJunnyLang);
+});
+</script>
+
+</body>
+</html>
