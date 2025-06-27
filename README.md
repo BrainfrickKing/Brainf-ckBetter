@@ -1,5 +1,9 @@
 # Esoland
 More languages coming soon
-Thue
-ArnoldC
-Befunge
+
+Current languages available include:
+Thue,
+Junlang,
+ArnoldC,
+Befunge,
+Brainf*ck,
