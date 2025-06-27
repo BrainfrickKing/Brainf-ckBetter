@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thue Interpreter</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #thue-code {
+            line-height: 1.5;
+        }
+        .output-console {
+            scrollbar-width: thin;
+            scrollbar-color: #4a5568 #2d3748;
+        }
+        .state-string {
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center p-4">
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+            <a href="index.html" class="text-3xl font-bold text-gray-800">Esoteric Language Interpreters</a>
+            <nav id="main-nav">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Thue Interpreter</h1>
+            
+            <div class="mb-6">
+                <label for="thue-code" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Write your Thue program (rules followed by `::=` and initial state):
+                </label>
+                <textarea id="thue-code"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[250px]"
+                    placeholder="a::=~Hello World!
+::=
+a"
+                    spellcheck="false"></textarea>
+            </div>
+            
+            <div class="mb-6">
+                <label for="thue-input" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Input for Thue (for the `::=:::` rule, one line per trigger):
+                </label>
+                <textarea id="thue-input"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[80px]"
+                    placeholder="Enter input lines here..."></textarea>
+            </div>
+            
+            <div class="flex justify-center mb-6">
+                <button id="run-button"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    Run Thue Program
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Output:</h2>
+                <div id="output-area"
+                    class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto h-32 whitespace-pre-wrap output-console">
+                    No output yet.
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Current State String:</h2>
+                <div id="state-string-area"
+                    class="bg-gray-100 text-gray-800 p-4 rounded-md font-mono text-sm overflow-auto h-24 state-string">
+                    State will be shown here.
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Status:</h2>
+                <p id="status-area" class="text-gray-700">Ready</p>
+            </div>
+            
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-3">About Thue:</h2>
+                <p class="text-gray-700 mb-4">
+                    Thue is an esoteric programming language based on the non-deterministic rewriting of a string. A program consists of a list of substitution rules and an initial state string. The interpreter repeatedly finds a substring that matches the left-hand side of a rule and replaces it with the right-hand side, until no more rules can be applied.
+                </p>
+                <h3 class="text-lg font-medium text-blue-700 mb-2">Rule Syntax:</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-md shadow">
+                        <thead class="bg-gray-200"><tr><th class="p-2 text-left">Rule Format</th><th class="p-2 text-left">Description</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td class="p-2 font-mono">lhs::=rhs</td><td class="p-2">Standard Rule: Replaces an occurrence of <code class="bg-gray-200 px-1 rounded">lhs</code> with <code class="bg-gray-200 px-1 rounded">rhs</code>.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">lhs::=~output</td><td class="p-2">Output Rule: Sends <code class="bg-gray-200 px-1 rounded">output</code> to the output stream and deletes <code class="bg-gray-200 px-1 rounded">lhs</code>.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">lhs::=:::</td><td class="p-2">Input Rule: Replaces <code class="bg-gray-200 px-1 rounded">lhs</code> with a line from the input stream.</td></tr>
+                            <tr class="bg-gray-50"><td class="p-2 font-mono">::=</td><td class="p-2">Terminator: Separates the list of rules from the initial state string.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeInput = document.getElementById('thue-code');
+            const inputInput = document.getElementById('thue-input');
+            const runButton = document.getElementById('run-button');
+            const outputArea = document.getElementById('output-area');
+            const statusArea = document.getElementById('status-area');
+            const stateStringArea = document.getElementById('state-string-area');
+
+            // Set default code
+            if (!codeInput.value) {
+                codeInput.value = `a::=~Hello World!
+::=
+a`;
+            }
+
+            runButton.addEventListener('click', async () => {
+                const code = codeInput.value;
+                const inputLines = inputInput.value.split('\n');
+
+                outputArea.textContent = '';
+                statusArea.textContent = 'Running...';
+                let currentOutput = '';
+                let inputPointer = 0;
+
+                try {
+                    // --- 1. Parse the Program ---
+                    const parts = code.split('\n::=\n');
+                    if (parts.length < 2) {
+                        throw new Error('Invalid program format. Rules must be separated from the initial state by a line containing only "::=".');
+                    }
+                    
+                    const ruleLines = parts[0].split('\n').filter(line => line.trim() !== '');
+                    let stateString = parts.slice(1).join('\n::=\n'); // Rejoin in case ::= was in the state
+                    
+                    const rules = ruleLines.map(line => {
+                        const ruleParts = line.split('::=');
+                        if (ruleParts.length !== 2) throw new Error(`Malformed rule: ${line}`);
+                        const lhs = ruleParts[0];
+                        const rhs = ruleParts[1];
+
+                        if (rhs === ':::') {
+                            return { lhs, type: 'input' };
+                        } else if (rhs.startsWith('~')) {
+                            return { lhs, rhs: rhs.substring(1), type: 'output' };
+                        } else {
+                            return { lhs, rhs, type: 'normal' };
+                        }
+                    });
+
+                    stateStringArea.textContent = stateString;
+
+                    // --- 2. Execution Loop ---
+                    const maxIterations = 50000;
+                    let iterations = 0;
+                    let running = true;
+
+                    while (running && iterations < maxIterations) {
+                        let ruleApplied = false;
+
+                        for (const rule of rules) {
+                            const index = stateString.indexOf(rule.lhs);
+                            if (index !== -1) {
+                                // A rule can be applied
+                                const before = stateString.substring(0, index);
+                                const after = stateString.substring(index + rule.lhs.length);
+
+                                switch (rule.type) {
+                                    case 'normal':
+                                        stateString = before + rule.rhs + after;
+                                        break;
+                                    case 'input':
+                                        const input = inputLines[inputPointer] || '';
+                                        stateString = before + input + after;
+                                        inputPointer++;
+                                        break;
+                                    case 'output':
+                                        currentOutput += rule.rhs + '\n';
+                                        stateString = before + after; // LHS is deleted
+                                        break;
+                                }
+                                
+                                ruleApplied = true;
+                                break; // Apply only one rule per iteration
+                            }
+                        }
+
+                        if (!ruleApplied) {
+                            running = false; // No more rules can be applied, program halts.
+                        }
+                        
+                        iterations++;
+                        if (iterations % 100 === 0) {
+                            stateStringArea.textContent = stateString;
+                            outputArea.textContent = currentOutput;
+                             // Yield to the event loop to prevent browser freezing
+                            await new Promise(resolve => setTimeout(resolve, 0));
+                        }
+                    }
+
+                    // --- 3. Finalize ---
+                    if (iterations >= maxIterations) {
+                        statusArea.textContent = 'Execution halted: Possible infinite loop detected.';
+                    } else {
+                        statusArea.textContent = 'Execution complete.';
+                    }
+
+                } catch (error) {
+                    statusArea.textContent = `Error: ${error.message}`;
+                } finally {
+                    outputArea.textContent = currentOutput;
+                    stateStringArea.textContent = stateStringArea.textContent; // Ensure final state is shown
+                    outputArea.scrollTop = outputArea.scrollHeight;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
