@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Befunge Interpreter</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the code editor to look more like a grid */
+        #befunge-code {
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+        .output-console {
+            scrollbar-width: thin;
+            scrollbar-color: #4a5568 #2d3748;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+            <a href="#" class="text-3xl font-bold text-gray-800">Esoteric Language Interpreters</a>
+            <nav id="main-nav">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Befunge-93 Interpreter</h1>
+
+            <div class="mb-6">
+                <label for="befunge-code" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Write your Befunge code in the playfield below:
+                </label>
+                <textarea
+                    id="befunge-code"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[250px]"
+                    placeholder="Enter your Befunge code here..."
+                    spellcheck="false"
+                ></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label for="befunge-input" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Input for '&' (integer) and '~' (character) commands:
+                </label>
+                <textarea
+                    id="befunge-input"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[80px]"
+                    placeholder="Provide input here..."
+                ></textarea>
+            </div>
+
+            <div class="flex justify-center mb-6">
+                <button
+                    id="run-button"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                    Run Befunge Code
+                </button>
+            </div>
+
+            <!-- Output and Status side-by-side -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-3">Output:</h2>
+                    <div
+                        id="output-console"
+                        class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto h-48 whitespace-pre-wrap output-console"
+                    >No output yet.</div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-3">Stack:</h2>
+                    <div
+                        id="stack-display"
+                        class="bg-gray-200 text-gray-800 p-4 rounded-md font-mono text-sm overflow-auto h-48"
+                    >[ ] (Empty)</div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Status:</h2>
+                <p id="status-text" class="text-gray-700">Ready</p>
+            </div>
+
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-3">About Befunge:</h2>
+                <p class="text-gray-700 mb-4">
+                    Befunge is a two-dimensional esoteric programming language invented in 1993 by Chris Pressey. Code is laid out on a 2D grid (the "playfield"), and the instruction pointer can travel in any of four cardinal directions. It is a stack-based language, meaning most operations manipulate values on a single stack. Befunge was designed with the goal of being as difficult to compile as possible, primarily due to its self-modifying nature (the <code>p</code> command) and multi-directional execution flow.
+                </p>
+                <h3 class="text-lg font-medium text-blue-700 mb-2">Befunge-93 Commands:</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-md">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="py-2 px-4 text-left font-medium text-gray-600">Cmd</th>
+                                <th class="py-2 px-4 text-left font-medium text-gray-600">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="p-2 font-mono">0-9</td>
+                                <td class="p-2">Push this number onto the stack.</td>
+                            </tr>
+                            <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">+ - * / %</td>
+                                <td class="p-2">Arithmetic: Pop b, then a. Push a [op] b.</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2 font-mono">!</td>
+                                <td class="p-2">Logical NOT: Pop a value. If 0, push 1; otherwise push 0.</td>
+                            </tr>
+                             <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">`</td>
+                                <td class="p-2">Greater than: Pop b, then a. Push 1 if a > b, else 0.</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2 font-mono">> < ^ v</td>
+                                <td class="p-2">Change instruction pointer direction.</td>
+                            </tr>
+                             <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">?</td>
+                                <td class="p-2">Set a random cardinal direction.</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2 font-mono">_ |</td>
+                                <td class="p-2">Horizontal/Vertical IF: Pop value. Go right/down if 0, left/up otherwise.</td>
+                            </tr>
+                             <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">"</td>
+                                <td class="p-2">Toggle stringmode (pushes ASCII values of chars until next ").</td>
+                            </tr>
+                             <tr class="border-b">
+                                <td class="p-2 font-mono">: \\ $</td>
+                                <td class="p-2">Stack manipulation: duplicate, swap, and pop (discard).</td>
+                            </tr>
+                            <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">. ,</td>
+                                <td class="p-2">Output: pop value and print as integer or ASCII character.</td>
+                            </tr>
+                             <tr class="border-b">
+                                <td class="p-2 font-mono">#</td>
+                                <td class="p-2">Bridge: Skip the next cell in the current direction.</td>
+                            </tr>
+                            <tr class="border-b bg-gray-50">
+                                <td class="p-2 font-mono">g p</td>
+                                <td class="p-2">Get/Put: Read/write character from/to the playfield at (x,y).</td>
+                            </tr>
+                             <tr class="border-b">
+                                <td class="p-2 font-mono">& ~</td>
+                                <td class="p-2">Input: Get an integer or a character from the user.</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="p-2 font-mono">@</td>
+                                <td class="p-2">End program.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM Element References ---
+    const codeTextarea = document.getElementById('befunge-code');
+    const inputTextarea = document.getElementById('befunge-input');
+    const runButton = document.getElementById('run-button');
+    const outputConsole = document.getElementById('output-console');
+    const statusText = document.getElementById('status-text');
+    const stackDisplay = document.getElementById('stack-display');
+
+    // --- Default "Hello World" Example ---
+    const DEFAULT_CODE = '"!dlroW olleH">:#,_@'
+    codeTextarea.value = DEFAULT_CODE;
+
+    // --- Interpreter State & Logic ---
+    let playfield = [];
+    let stack = [];
+    let pc = { x: 0, y: 0 };
+    let delta = { x: 1, y: 0 }; // Direction: right
+    let stringMode = false;
+    let output = '';
+    let inputBuffer = '';
+    let inputPointer = 0;
+    
+    /**
+     * Updates the UI with the current state.
+     */
+    function updateDOM(currentOutput, status, currentStack) {
+        outputConsole.textContent = currentOutput || "No output yet.";
+        outputConsole.scrollTop = outputConsole.scrollHeight;
+        statusText.textContent = status;
+        
+        if (currentStack.length === 0) {
+            stackDisplay.textContent = "[ ] (Empty)";
+        } else {
+            stackDisplay.textContent = `[ ${currentStack.join(', ')} ]`;
+        }
+    }
+
+    /**
+     * Parses the code from the textarea into a 2D array (playfield).
+     */
+    function parsePlayfield() {
+        const lines = codeTextarea.value.split('\n');
+        const width = Math.max(...lines.map(line => line.length));
+        return lines.map(line => line.padEnd(width, ' ').split(''));
+    }
+
+    /**
+     * The main execution function for Befunge code.
+     */
+    function executeBefunge() {
+        // --- Reset State ---
+        playfield = parsePlayfield();
+        stack = [];
+        pc = { x: -1, y: 0 }; // Start at -1, first move will put it at (0,0)
+        delta = { x: 1, y: 0 };
+        stringMode = false;
+        output = '';
+        inputBuffer = inputTextarea.value;
+        inputPointer = 0;
+        
+        updateDOM('', 'Running...', []);
+
+        let running = true;
+        let executionSteps = 0;
+        const maxSteps = 500000; // Safeguard against infinite loops
+
+        function movePC() {
+            pc.x += delta.x;
+            pc.y += delta.y;
+            
+            // Wrap around logic
+            if (playfield.length === 0) { running = false; return; }
+            const height = playfield.length;
+            const width = playfield[pc.y]?.length || 0;
+
+            if (pc.y < 0) pc.y = height - 1;
+            if (pc.y >= height) pc.y = 0;
+            if (pc.x < 0) pc.x = (playfield[pc.y]?.length || 1) - 1;
+            if (pc.x >= (playfield[pc.y]?.length || 0)) pc.x = 0;
+        }
+
+        const intervalId = setInterval(() => {
+            if (!running || executionSteps >= maxSteps) {
+                clearInterval(intervalId);
+                let finalStatus = 'Execution complete.';
+                if (executionSteps >= maxSteps) {
+                    finalStatus = 'Execution halted: Possible infinite loop detected.';
+                }
+                updateDOM(output, finalStatus, stack);
+                return;
+            }
+
+            movePC();
+            if (!running) return;
+
+            const instruction = playfield[pc.y]?.[pc.x] || ' ';
+
+            if (stringMode) {
+                if (instruction === '"') {
+                    stringMode = false;
+                } else {
+                    stack.push(instruction.charCodeAt(0));
+                }
+            } else {
+                switch (instruction) {
+                    // Literals
+                    case '0': case '1': case '2': case '3': case '4':
+                    case '5': case '6': case '7': case '8': case '9':
+                        stack.push(Number(instruction));
+                        break;
+                    // Arithmetic
+                    case '+': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(b + a); break; }
+                    case '-': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(b - a); break; }
+                    case '*': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(b * a); break; }
+                    case '/': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(a === 0 ? 0 : Math.floor(b / a)); break; }
+                    case '%': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(a === 0 ? 0 : b % a); break; }
+                    // Logic
+                    case '!': { const a = stack.pop() || 0; stack.push(a === 0 ? 1 : 0); break; }
+                    case '`': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(b > a ? 1 : 0); break; }
+                    // Movement
+                    case '>': delta = { x: 1, y: 0 }; break;
+                    case '<': delta = { x: -1, y: 0 }; break;
+                    case '^': delta = { x: 0, y: -1 }; break;
+                    case 'v': delta = { x: 0, y: 1 }; break;
+                    case '?': {
+                        const dirs = [{x:1,y:0}, {x:-1,y:0}, {x:0,y:1}, {x:0,y:-1}];
+                        delta = dirs[Math.floor(Math.random() * 4)];
+                        break;
+                    }
+                    // Conditionals
+                    case '_': { const a = stack.pop() || 0; delta = a === 0 ? {x:1,y:0} : {x:-1,y:0}; break; }
+                    case '|': { const a = stack.pop() || 0; delta = a === 0 ? {x:0,y:1} : {x:0,y:-1}; break; }
+                    // Stringmode
+                    case '"': stringMode = true; break;
+                    // Stack ops
+                    case ':': { const a = stack.pop() || 0; stack.push(a, a); break; }
+                    case '\\': { const a = stack.pop() || 0; const b = stack.pop() || 0; stack.push(a, b); break; }
+                    case '$': stack.pop(); break;
+                    // I/O
+                    case '.': output += (stack.pop() || 0).toString() + " "; break;
+                    case ',': output += String.fromCharCode(stack.pop() || 0); break;
+                    case '&': {
+                        const numMatch = inputBuffer.substring(inputPointer).match(/-?\d+/);
+                        if (numMatch) {
+                            stack.push(parseInt(numMatch[0], 10));
+                            inputPointer += numMatch.index + numMatch[0].length;
+                        } else {
+                            stack.push(0); // Default if no number found
+                        }
+                        break;
+                    }
+                    case '~': {
+                        if (inputPointer < inputBuffer.length) {
+                            stack.push(inputBuffer.charCodeAt(inputPointer));
+                            inputPointer++;
+                        } else {
+                            stack.push(-1); // EOF
+                        }
+                        break;
+                    }
+                    // Control flow
+                    case '#': movePC(); break;
+                    case '@': running = false; break;
+                    // Memory
+                    case 'g': {
+                        const y = stack.pop() || 0;
+                        const x = stack.pop() || 0;
+                        stack.push(playfield[y]?.[x]?.charCodeAt(0) || 0);
+                        break;
+                    }
+                    case 'p': {
+                        const y = stack.pop() || 0;
+                        const x = stack.pop() || 0;
+                        const v = stack.pop() || 0;
+                        if (playfield[y] !== undefined) {
+                            playfield[y][x] = String.fromCharCode(v);
+                        }
+                        break;
+                    }
+                }
+            }
+            executionSteps++;
+            
+            // Update UI periodically for better responsiveness
+            if (executionSteps % 1000 === 0) {
+                 updateDOM(output, `Running... (Step: ${executionSteps})`, stack);
+            }
+
+        }, 0); // Using setInterval with 0ms delay for async execution
+    }
+    
+    // Attach event listener to the run button
+    runButton.addEventListener('click', executeBefunge);
+});
+</script>
+
+</body>
+</html>
