@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esoteric Language Interpreters</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+            <a href="index.html" class="text-3xl font-bold text-gray-800">Esoteric Language Interpreters</a>
+            <nav id="main-nav">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex flex-col items-center justify-center p-4 mt-8">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h1 class="text-4xl font-bold text-center text-gray-800 mb-4">Available Interpreters</h1>
+            <p class="text-center text-gray-600 mb-10">Welcome! Select a language from the list below to start coding.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- ArnoldC Card -->
+                <a href="arnoldc.html" class="block p-6 bg-gray-50 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">ArnoldC</h2>
+                    <p class="text-gray-600">An imperative language where keywords are replaced with quotes from Arnold Schwarzenegger movies.</p>
+                </a>
+
+                <!-- Befunge Card -->
+                <a href="befunge.html" class="block p-6 bg-gray-50 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Befunge</h2>
+                    <p class="text-gray-600">A two-dimensional, stack-based language where the instruction pointer can move in any cardinal direction.</p>
+                </a>
+                
+                <!-- Brainf*ck Card -->
+                <a href="brainfuck.html" class="block p-6 bg-gray-50 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Brainf*ck</h2>
+                    <p class="text-gray-600">A minimalist language operating on a tape of memory cells with only eight simple commands.</p>
+                </a>
+
+                <!-- JunLang Card -->
+                <a href="Junlang.html" class="block p-6 bg-gray-50 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">JunLang</h2>
+                    <p class="text-gray-600">An esoteric language inspired by ArnoldC, with commands based on affectionate nicknames.</p>
+                </a>
+
+                <!-- Thue Card -->
+                <a href="thue.html" class="block p-6 bg-gray-50 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Thue</h2>
+                    <p class="text-gray-600">A non-deterministic, string-rewriting language where execution consists of applying substitution rules.</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
