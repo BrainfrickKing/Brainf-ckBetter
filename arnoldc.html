@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArnoldC Interpreter</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #arnoldc-code {
+            line-height: 1.5;
+        }
+        .output-console {
+            scrollbar-width: thin;
+            scrollbar-color: #4a5568 #2d3748;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center p-4">
+    <header class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl">
+            <a href="#" class="text-3xl font-bold text-gray-800">Esoteric Language Interpreters</a>
+            <nav id="main-nav">
+                <ul class="flex space-x-6">
+                    <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">ArnoldC Interpreter</h1>
+            
+            <div class="mb-6">
+                <label for="arnoldc-code" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Write your ArnoldC code here:
+                </label>
+                <textarea id="arnoldc-code"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[250px]"
+                    placeholder="Enter your ArnoldC code...">IT'S SHOWTIME
+TALK TO THE HAND "Hello, world!"
+YOU HAVE BEEN TERMINATED</textarea>
+            </div>
+            
+            <div class="mb-6">
+                <label for="arnoldc-input" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Input for ArnoldC (for the 'I WANT TO ASK YOU...' command):
+                </label>
+                <textarea id="arnoldc-input"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y min-h-[80px]"
+                    placeholder="Enter input integers here, one per line..."></textarea>
+            </div>
+            
+            <div class="flex justify-center mb-6">
+                <button id="run-button"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    Run ArnoldC Code
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Output:</h2>
+                <div id="output-area"
+                    class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm overflow-auto h-32 whitespace-pre-wrap output-console">
+                    No output yet.
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Status:</h2>
+                <p id="status-area" class="text-gray-700">Ready</p>
+            </div>
+            
+            <div class="mb-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-3">Variables:</h2>
+                <div class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">
+                    <table class="min-w-full bg-white rounded-md shadow-sm">
+                        <thead>
+                            <tr class="bg-gray-200">
+                                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Name</th>
+                                <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variables-body">
+                            <tr>
+                                <td colspan="2" class="py-2 px-4 text-center text-gray-500">No variables declared yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h2 class="text-xl font-semibold text-blue-800 mb-3">About ArnoldC:</h2>
+                <p class="text-gray-700 mb-2">
+                    ArnoldC is an imperative esoteric programming language where the basic keywords are replaced with quotes from Arnold Schwarzenegger movies.
+                </p>
+                <h3 class="text-lg font-medium text-blue-700 mb-2">ArnoldC Commands:</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-md shadow">
+                        <thead class="bg-gray-200"><tr><th class="p-2 text-left">Command</th><th class="p-2 text-left">Description</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td class="p-2 font-mono">IT'S SHOWTIME</td><td class="p-2">Begin main program.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">YOU HAVE BEEN TERMINATED</td><td class="p-2">End main program.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">TALK TO THE HAND "text"</td><td class="p-2">Print a string or variable.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">HEY CHRISTMAS TREE var</td><td class="p-2">Declare an integer variable.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">YOU SET US UP value</td><td class="p-2">Set initial value for a declared variable.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">GET TO THE CHOPPER var</td><td class="p-2">Begin variable assignment block.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">HERE IS MY INVITATION val</td><td class="p-2">Set assignment value.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">GET UP / GET DOWN</td><td class="p-2">Add / Subtract from the value.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">YOU'RE FIRED / HE HAD TO SPLIT</td><td class="p-2">Multiply / Divide the value.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">ENOUGH TALK</td><td class="p-2">End assignment block.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">BECAUSE I'M GOING TO SAY PLEASE</td><td class="p-2">If statement (condition on next line).</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">BULLSHIT</td><td class="p-2">Else statement.</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">YOU HAVE NO RESPECT FOR LOGIC</td><td class="p-2">End If block.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">STICK AROUND</td><td class="p-2">While loop (condition on next line).</td></tr>
+                            <tr class="border-b"><td class="p-2 font-mono">CHILL</td><td class="p-2">End While loop.</td></tr>
+                            <tr class="border-b bg-gray-50"><td class="p-2 font-mono">I WANT TO ASK YOU...</td><td class="p-2">Read an integer from input.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="user-id-display" class="mt-4 text-center text-gray-600 text-sm"></div>
+        </div>
+    </main>
+
+    <script type="module">
+        // Firebase part is kept for environment consistency but is not used by the interpreter logic itself.
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        async function initFirebase() {
+            try {
+                const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+                const firebaseConfig = JSON.parse(firebaseConfigStr);
+
+                if (Object.keys(firebaseConfig).length > 0) {
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
+                    else await signInAnonymously(auth);
+                    document.getElementById('user-id-display').textContent = `User ID: ${auth.currentUser?.uid}`;
+                } else {
+                    document.getElementById('user-id-display').textContent = `User ID: ${crypto.randomUUID()}`;
+                }
+            } catch (error) {
+                document.getElementById('user-id-display').textContent = `Firebase Error`;
+                console.error("Firebase init error:", error);
+            }
+        }
+        initFirebase();
+
+        // --- ArnoldC Interpreter Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeInput = document.getElementById('arnoldc-code');
+            const inputInput = document.getElementById('arnoldc-input');
+            const runButton = document.getElementById('run-button');
+            const outputArea = document.getElementById('output-area');
+            const statusArea = document.getElementById('status-area');
+            const variablesBody = document.getElementById('variables-body');
+
+            // --- ArnoldC Keywords and Patterns ---
+            const KEYWORDS = {
+                BEGIN_MAIN: "IT'S SHOWTIME",
+                END_MAIN: "YOU HAVE BEEN TERMINATED",
+                PRINT: /^TALK TO THE HAND (.+)/,
+                DECLARE_INT: /^HEY CHRISTMAS TREE (.+)/,
+                SET_INITIAL_VALUE: /^YOU SET US UP (.+)/,
+                ASSIGN_VAR: /^GET TO THE CHOPPER (.+)/,
+                SET_VALUE: /^HERE IS MY INVITATION (.+)/,
+                END_ASSIGN_VAR: "ENOUGH TALK",
+                ADD: /^GET UP (.+)/,
+                SUB: /^GET DOWN (.+)/,
+                MUL: /^YOU'RE FIRED (.+)/,
+                DIV: /^HE HAD TO SPLIT (.+)/,
+                MOD: /^I LET HIM GO (.+)/,
+                EQUAL: /^YOU ARE NOT YOU YOU ARE ME (.+)/,
+                GREATER_THAN: /^LET OFF SOME STEAM BENNET (.+)/,
+                OR: /^CONSIDER THAT A DIVORCE (.+)/,
+                AND: /^KNOCK KNOCK (.+)/,
+                IF: "BECAUSE I'M GOING TO SAY PLEASE",
+                ELSE: "BULLSHIT",
+                END_IF: "YOU HAVE NO RESPECT FOR LOGIC",
+                WHILE: "STICK AROUND",
+                END_WHILE: "CHILL",
+                READ_INT: /^I WANT TO ASK YOU A BUNCH OF QUESTIONS AND I WANT TO HAVE THEM ANSWERED IMMEDIATELY (.+)/,
+                TRUE: "@NO PROBLEMO",
+                FALSE: "@I LIED"
+            };
+
+            let variables = new Map();
+
+            function updateVariablesDisplay() {
+                variablesBody.innerHTML = '';
+                if (variables.size === 0) {
+                    variablesBody.innerHTML = '<tr><td colspan="2" class="py-2 px-4 text-center text-gray-500">No variables declared yet.</td></tr>';
+                    return;
+                }
+                for (const [name, value] of variables.entries()) {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b hover:bg-gray-50';
+                    row.innerHTML = `<td class="py-2 px-4 text-gray-700">${name}</td><td class="py-2 px-4 text-gray-700">${value}</td>`;
+                    variablesBody.appendChild(row);
+                }
+            }
+
+            function resolveValue(token) {
+                token = token.trim();
+                if (token === KEYWORDS.TRUE) return 1;
+                if (token === KEYWORDS.FALSE) return 0;
+                if (!isNaN(Number(token))) return Number(token);
+                if (variables.has(token)) return variables.get(token);
+                throw new Error(`Undefined variable or malformed value: "${token}"`);
+            }
+
+            function findBlockEnd(start, open, elseKeyword, close) {
+                let balance = 1;
+                for (let i = start + 1; i < lines.length; i++) {
+                    if (lines[i] === open) balance++;
+                    else if (lines[i] === close) balance--;
+                    if (balance === 0) return { end: i, else: -1 };
+                    if (balance === 1 && lines[i] === elseKeyword) {
+                        // Find the final close for the else block
+                        for(let j = i + 1; j < lines.length; j++) {
+                            if (lines[j] === open) balance++;
+                            else if (lines[j] === close) balance--;
+                            if (balance === 0) return { end: j, else: i };
+                        }
+                    }
+                }
+                throw new Error(`Unclosed block starting at line ${start + 1}`);
+            }
+
+            let lines = []; // Make lines globally accessible for helper functions
+
+            runButton.addEventListener('click', async () => {
+                const code = codeInput.value;
+                const inputString = inputInput.value;
+                
+                outputArea.textContent = '';
+                statusArea.textContent = 'Running...';
+                variables = new Map();
+                updateVariablesDisplay();
+
+                let currentOutput = '';
+                let programCounter = 0;
+                let inputLines = inputString.split('\n').filter(l => l.trim() !== '');
+                let inputPointer = 0;
+
+                lines = code.split('\n').map(l => l.trim()).filter(l => l);
+
+                try {
+                    // Find main function
+                    const mainStart = lines.indexOf(KEYWORDS.BEGIN_MAIN);
+                    const mainEnd = lines.indexOf(KEYWORDS.END_MAIN);
+                    if (mainStart === -1) throw new Error("Program must start with \"IT'S SHOWTIME\"");
+                    if (mainEnd === -1) throw new Error("Program must end with \"YOU HAVE BEEN TERMINATED\"");
+
+                    programCounter = mainStart + 1;
+
+                    // Main execution loop
+                    const maxIterations = 500000;
+                    let iterations = 0;
+
+                    while (programCounter < mainEnd && iterations < maxIterations) {
+                        const line = lines[programCounter];
+                        let match;
+
+                        if (match = line.match(KEYWORDS.PRINT)) {
+                            const token = match[1];
+                            if (token.startsWith('"') && token.endsWith('"')) {
+                                currentOutput += token.slice(1, -1);
+                            } else {
+                                currentOutput += resolveValue(token);
+                            }
+                            currentOutput += '\n';
+                        }
+                        else if (match = line.match(KEYWORDS.DECLARE_INT)) {
+                            const varName = match[1];
+                            if (variables.has(varName)) throw new Error(`Variable "${varName}" already declared.`);
+                            variables.set(varName, 0); // Initialize to 0
+                            
+                            const nextLine = lines[programCounter + 1];
+                            if (nextLine && (match = nextLine.match(KEYWORDS.SET_INITIAL_VALUE))) {
+                                variables.set(varName, resolveValue(match[1]));
+                                programCounter++;
+                            }
+                        }
+                        else if (match = line.match(KEYWORDS.ASSIGN_VAR)) {
+                            const varName = match[1];
+                            if (!variables.has(varName)) throw new Error(`Undeclared variable "${varName}"`);
+                            
+                            programCounter++;
+                            const nextLine = lines[programCounter];
+                            if (!(match = nextLine.match(KEYWORDS.SET_VALUE))) throw new Error(`Expected "HERE IS MY INVITATION" after "GET TO THE CHOPPER"`);
+                            
+                            let tempValue = resolveValue(match[1]);
+                            programCounter++;
+                            
+                            while (lines[programCounter] !== KEYWORDS.END_ASSIGN_VAR) {
+                                const opLine = lines[programCounter];
+                                if (match = opLine.match(KEYWORDS.ADD)) tempValue += resolveValue(match[1]);
+                                else if (match = opLine.match(KEYWORDS.SUB)) tempValue -= resolveValue(match[1]);
+                                else if (match = opLine.match(KEYWORDS.MUL)) tempValue *= resolveValue(match[1]);
+                                else if (match = opLine.match(KEYWORDS.DIV)) tempValue /= resolveValue(match[1]);
+                                else if (match = opLine.match(KEYWORDS.MOD)) tempValue %= resolveValue(match[1]);
+                                else if (match = opLine.match(KEYWORDS.EQUAL)) tempValue = (tempValue === resolveValue(match[1])) ? 1 : 0;
+                                else if (match = opLine.match(KEYWORDS.GREATER_THAN)) tempValue = (tempValue > resolveValue(match[1])) ? 1 : 0;
+                                else if (match = opLine.match(KEYWORDS.OR)) tempValue = (tempValue || resolveValue(match[1])) ? 1 : 0;
+                                else if (match = opLine.match(KEYWORDS.AND)) tempValue = (tempValue && resolveValue(match[1])) ? 1 : 0;
+                                else throw new Error(`Invalid operation "${opLine}" in assignment block.`);
+                                programCounter++;
+                            }
+                            variables.set(varName, tempValue);
+                        }
+                        else if (line === KEYWORDS.IF) {
+                            const condition = resolveValue(lines[programCounter + 1]);
+                            const { end, else: elsePos } = findBlockEnd(programCounter, KEYWORDS.IF, KEYWORDS.ELSE, KEYWORDS.END_IF);
+                            if (condition === 0) { // If false
+                                programCounter = elsePos !== -1 ? elsePos : end;
+                            } else { // If true, skip the condition line
+                                programCounter++;
+                            }
+                        }
+                        else if (line === KEYWORDS.ELSE) {
+                            // If we hit an ELSE, it means the IF was true, so we skip to the END_IF
+                            const { end } = findBlockEnd(programCounter, KEYWORDS.ELSE, null, KEYWORDS.END_IF);
+                            programCounter = end;
+                        }
+                        else if (line === KEYWORDS.WHILE) {
+                            const condition = resolveValue(lines[programCounter + 1]);
+                             if (condition === 0) { // If false, skip loop
+                                const { end } = findBlockEnd(programCounter, KEYWORDS.WHILE, null, KEYWORDS.END_WHILE);
+                                programCounter = end;
+                            } else { // If true, skip condition line and enter loop
+                                programCounter++;
+                            }
+                        }
+                        else if (line === KEYWORDS.END_WHILE) {
+                             // Jump back to the start of the while loop
+                            let balance = 1;
+                            for (let i = programCounter - 1; i >= 0; i--) {
+                                if (lines[i] === KEYWORDS.END_WHILE) balance++;
+                                if (lines[i] === KEYWORDS.WHILE) balance--;
+                                if (balance === 0) {
+                                    programCounter = i - 1; // loop back to before the WHILE keyword
+                                    break;
+                                }
+                            }
+                        }
+                        else if (match = line.match(KEYWORDS.READ_INT)) {
+                            const varName = match[1];
+                            if (!variables.has(varName)) throw new Error(`Undeclared variable "${varName}" for input.`);
+                            const val = inputLines[inputPointer] ? parseInt(inputLines[inputPointer], 10) : 0;
+                            if (isNaN(val)) throw new Error(`Invalid integer input: "${inputLines[inputPointer]}"`);
+                            variables.set(varName, val);
+                            inputPointer++;
+                        }
+                        
+                        programCounter++;
+                        iterations++;
+                        if(iterations % 1000 === 0) await new Promise(r => setTimeout(r, 0)); // Prevent browser freeze
+                    }
+
+                    if (iterations >= maxIterations) {
+                        statusArea.textContent = 'Execution halted: Possible infinite loop detected.';
+                    } else {
+                        statusArea.textContent = 'Execution complete.';
+                    }
+                    
+                } catch (error) {
+                    statusArea.textContent = `Error: ${error.message}`;
+                } finally {
+                    outputArea.textContent = currentOutput;
+                    outputArea.scrollTop = outputArea.scrollHeight;
+                    updateVariablesDisplay();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
