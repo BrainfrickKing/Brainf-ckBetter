@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Q5QH6FT3J"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-2Q5QH6FT3J');
-    </script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-2Q5QH6FT3J"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JunLang Compiler</title>
+    
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs (using latest compatible versions) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -37,8 +36,6 @@
             <nav id="main-nav" class="d-none d-lg-block">
                 <ul class="flex space-x-6">
                     <li><a href="index.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">Home</a></li>
-                    <li><a href="Brainfuck.html" class="text-lg text-gray-300 hover:text-gray-800 transition duration-300">BrainF*ck</a></li>
-                    <li><a href="Junlang.html" class="text-lg text-gray-700 hover:text-gray-800 transition duration-300">JunLang</a></li>
                 </ul>
             </nav>
         </div>
@@ -119,7 +116,7 @@
                 <h3 class="text-lg font-medium text-blue-700 mb-2">JunLang Commands:</h3>
                 <ul class="list-disc list-inside text-gray-700 space-y-1">
                     <li><code class="bg-gray-200 px-1 rounded">Junny-jun-jun</code>: Program Start</li>
-                    <li><code class="bg-gray-200 px-1 rounded">Junny-jun-jun-junny jun</code>: Program End (Note: The provided code had a typo, corrected to `junny-jun` for symmetry)</li>
+                    <li><code class="bg-gray-200 px-1 rounded">Junny-jun-jun-junny-jun</code>: Program End</li>
                     <li><code class="bg-gray-200 px-1 rounded">Junny <variable_name></code>: Declare a new integer variable.</li>
                     <li><code class="bg-gray-200 px-1 rounded">Mr. Junny <variable_name> IS <value_or_variable></code>: Assign a value.</li>
                     <li><code class="bg-gray-200 px-1 rounded">Argoonington <variable> ADD <value_or_variable></code>: Add.</li>
@@ -169,51 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Default code to display in the editor
     const DEFAULT_CODE = `Junny-jun-jun
-Junny counter
-Mr. Junny counter IS 0
-Junny limit
-Mr. Junny limit IS 5
-
-Daddy a jun "Counting from 0 to 4:"
-
-// The original 'EQUALS' check for the while loop was incorrect.
-// JunLang while loops should check for 'NOT EQUALS' to execute.
-// This example is modified to demonstrate a working loop.
-// Let's create a temporary flag.
-Junny loop_flag
-Mr. Junny loop_flag IS 0
-Junny loop_end_flag
-Mr. Junny loop_end_flag IS 1
-
-Arjulio loop_flag EQUALS loop_end_flag
-    Daddy a jun counter
-    Argoonington counter ADD 1
-    
-    // Check if we should exit the loop
-    Junyper counter EQUALS limit
-        Mr. Junny loop_flag IS 1
-    Arjudge
-Arjunny
-
-Junny num1
-Junny num2
-Daddy a jun "Enter a number for num1:"
-Arjuna num1
-Daddy a jun "Enter a number for num2:"
-Arjuna num2
-
-Junny result
-Mr. Junny result IS num1
-Argoonington result ADD num2
-Daddy a jun "Sum is: "
-Daddy a jun result
-
-Junyper num1 EQUALS num2
-    Daddy a jun "num1 equals num2!"
-Juniper
-    Daddy a jun "num1 does not equal num2."
-Arjudge
-
+Daddy a jun "Hello World!"
 Junny-jun-jun-junny-jun`;
 
     // --- State Variables (replaces React's useState) ---
